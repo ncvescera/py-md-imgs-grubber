@@ -16,7 +16,7 @@ def main(args):
     print(f"Totale: {len(links)}")
 
     if args.nosave is False:
-        downloand_links(links, args.wget)
+        downloand_links(links, args.wget, args.type)
 
 
 def find_all_imgs(lines):
@@ -46,14 +46,17 @@ def find_all_imgs(lines):
     return links
 
 
-def downloand_links(links, wget):
+def downloand_links(links, wget, ext):
+    if ext is None:
+        ext = "gif"
+    
     # Scarica i link trovati
     for link, row in links:
         if wget:
-            os.system(f"wget \"{link}\" -O \"line{row}.gif\"")
+            os.system(f"wget \"{link}\" -O \"line{row}.{ext}\"")
 
         else:
-            print(f"Downloanding line{row}.gif ...")
+            print(f"Downloanding line{row}.{ext} ...")
 
             # L'immagine verrà scaricata per forza !
             # Se non riesce a scaricare l'immagine ci riporva
@@ -61,7 +64,7 @@ def downloand_links(links, wget):
             while end:
                 try:
                     req = requests.get(link, timeout=5)
-                    open(f"line{row}.gif", 'wb').write(req.content)
+                    open(f"line{row}.{ext}", 'wb').write(req.content)
 
                 except Exception:
                     print("\tRiprovo...")
@@ -78,6 +81,7 @@ def init_args():
     parser.add_argument('file_name', help="File to operate with")
     parser.add_argument('--nosave', action='store_true', help="Print the links only, no downloands")
     parser.add_argument('--wget', action='store_true', help="Downloand files with wget software (you must have wget installed)")
+    parser.add_argument('--type', help="Choose the extention type [<gif>, <png>, ...]")
 
     return parser.parse_args()
 
